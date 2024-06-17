@@ -12,15 +12,19 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 
+import mn.myownmap.myownmap.model.DecimalGeoData;
 import mn.myownmap.myownmap.model.GeoData;
 
 public class GeodataService {
 
-	public void getGeoData() throws ImageProcessingException, IOException {
-		String file = Objects.requireNonNull(GeodataService.class.getClassLoader().getResource("IMG_4243.HEIC"))
+	public void getGeoData(String file) throws ImageProcessingException, IOException {
+		
+		DecimalGeoData decimalGeoDataObj = new DecimalGeoData();
+		decimalGeoDataObj.setFileName(file);
+		String getFile = Objects.requireNonNull(GeodataService.class.getClassLoader().getResource(file))
 				.getFile();
-		File jpegFile = new File(file);
-		Metadata metadata = ImageMetadataReader.readMetadata(jpegFile);
+		File picFile = new File(getFile);
+		Metadata metadata = ImageMetadataReader.readMetadata(picFile);
 		GeoData geoData = new GeoData();
 		for (Directory directory : metadata.getDirectories()) {
 			if (!directory.getName().equalsIgnoreCase("gps")) {
@@ -41,19 +45,18 @@ public class GeodataService {
 				}
 			}
 		}
-		System.out.println(geoData);
-		System.out.println(getNormal(geoData.getLatitude(), geoData.getLatitudeRef()));
-		System.out.println(getNormal(geoData.getLongitude(), geoData.getLongitudeRef()));
+		decimalGeoDataObj.setLatitude(getNormal(geoData.getLatitude(), geoData.getLatitudeRef()));
+		decimalGeoDataObj.setLongitude(getNormal(geoData.getLongitude(), geoData.getLongitudeRef()));
+		System.out.println(decimalGeoDataObj);
+//		System.out.println(getNormal(geoData.getLatitude(), geoData.getLatitudeRef()));
+//		System.out.println(getNormal(geoData.getLongitude(), geoData.getLongitudeRef()));
 	}
-
+	
+	//convert degrees minutes,seconds to decimal
 	public Double getNormal(String value, String ref){
 	    Double degree = Double.parseDouble(StringUtils.substringBefore(value,"°"));
-	    System.out.println(degree);
 	    Double minute = Double.parseDouble(StringUtils.substringBefore(StringUtils.substringAfter(value,"°"),"'"));
-	    System.out.println(minute);
 	    Double second = Double.parseDouble(StringUtils.substringBefore(StringUtils.substringAfter(value,"'"),"\"").trim());
-	    System.out.println(second);
-	    //	    Double second = Double.parseDouble((StringUtils.substringAfter(value,"'")).trim());
 	    double dd = Math.signum(degree) * (Math.abs(degree) + (minute / 60.0) + (second / 3600.0));
 	    if(ref == "S" || ref == "W") {
 	    	dd = dd*-1;
