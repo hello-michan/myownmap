@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.drew.imaging.ImageProcessingException;
+import com.google.maps.errors.ApiException;
 
 import mn.myownmap.myownmap.service.GeodataService;
 
@@ -17,10 +18,16 @@ import mn.myownmap.myownmap.service.GeodataService;
 public class MyownmapController {
 
 	@GetMapping("/getGeodata")
-	public void getGeodata(@RequestParam(value = "files") String files) throws ImageProcessingException, IOException {
+	public String getGeodata(@RequestParam(value = "files") String files) throws ImageProcessingException, IOException, ApiException, InterruptedException {
 		GeodataService rtngeoData = new GeodataService();
-		rtngeoData.getGeoData(files);
+		return rtngeoData.getAddress(rtngeoData.getGeoData(files));
 	}
+	
+//	@GetMapping("/getfile")
+//	public String getfile(){
+//		GeodataService geocoder = new GeodataService();
+//		return geocoder.readApiKeyFile();
+//	}
 	
 	@PostMapping("/postGeodata")
 	public void postGeodata(@RequestBody List<String> files) throws ImageProcessingException, IOException {
