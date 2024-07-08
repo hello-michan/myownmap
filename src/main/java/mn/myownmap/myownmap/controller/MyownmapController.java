@@ -42,7 +42,7 @@ public class MyownmapController {
 	
 	@GetMapping("/getPlace")
 	public String getPlace(@RequestParam(value = "address") String address) {
-		String apikey = "AIzaSyCQ9sDqLQbQk6Gg7diM6wHAxEoz278H5sY";
+		String apikey = "APIKEY";
 		GooglePlaces gp = new GooglePlaces(apikey);
 		PlacesResult pr = gp.searchText(address);
 		for(Place place: pr.asList()) {
