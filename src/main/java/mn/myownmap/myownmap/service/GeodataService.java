@@ -30,6 +30,7 @@ import mn.myownmap.myownmap.model.GeoData;
 
 public class GeodataService {
 
+	//get latitude and longitude from photos 
 	public LatLng getGeoData(String file) throws ImageProcessingException, IOException {
 		LatLng location = new LatLng();
 		DecimalGeoData decimalGeoDataObj = new DecimalGeoData();
@@ -61,7 +62,6 @@ public class GeodataService {
 		decimalGeoDataObj.setLongitude(getNormal(geoData.getLongitude(), geoData.getLongitudeRef()));
 		location.lat = getNormal(geoData.getLatitude(), geoData.getLatitudeRef());
 		location.lng = getNormal(geoData.getLongitude(), geoData.getLongitudeRef());
-		System.out.println(decimalGeoDataObj);
 		return location;
 	}
 
@@ -88,6 +88,14 @@ public class GeodataService {
 		return rtn;
 	}
 	
+	public String getBusiness(){
+		String rtn = "";
+		return rtn;
+	}
+	
+	
+	
+	//read file method
 	private String readApiKeyFile() {
 		String apikey = null;
 		try {

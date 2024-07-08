@@ -50,8 +50,17 @@
 		<dependency>
   			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			</dependency>
-</dependencies>
+		</dependency>
+		<dependency>
+		  <groupId>com.google.maps</groupId>
+		  <artifactId>google-maps-places</artifactId>
+		  <version>0.17.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
