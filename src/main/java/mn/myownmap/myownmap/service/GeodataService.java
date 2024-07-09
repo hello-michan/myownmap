@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
+
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
@@ -19,14 +17,18 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
-import com.google.maps.GeocodingApiRequest;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.AddressType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 
 import mn.myownmap.myownmap.model.DecimalGeoData;
 import mn.myownmap.myownmap.model.GeoData;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class GeodataService {
 
@@ -64,6 +66,22 @@ public class GeodataService {
 		location.lng = getNormal(geoData.getLongitude(), geoData.getLongitudeRef());
 		return location;
 	}
+	
+	//get Objects list
+		public void listObjects(S3Client s3, String bucketName) {
+			ListObjectsRequest listObjects = ListObjectsRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .build();
+			ListObjectsResponse res = s3.listObjects(listObjects);
+            List<S3Object> objects = res.contents();
+            for (S3Object myValue : objects) {
+            	if(myValue.size()>0)
+            		System.out.println(myValue);
+            }
+	        
+		}
+	
 
 	// convert degrees minutes,seconds to decimal
 	public Double getNormal(String value, String ref) {
@@ -81,35 +99,14 @@ public class GeodataService {
 	// get address from latitude and longitude
 	public String getAddress(LatLng location) throws ApiException, InterruptedException, IOException {
 		String rtn = "";
-		GeoApiContext context = new GeoApiContext.Builder().apiKey(readApiKeyFile()).build();
+		ReadFile rd = new ReadFile();
+		GeoApiContext context = new GeoApiContext.Builder().apiKey(rd.readApiKeyFile("googleApiKey.txt")).build();
 		GeocodingResult[] geocodingapirtn =  GeocodingApi.reverseGeocode(context, location).await();
 		rtn = geocodingapirtn[0].formattedAddress;
 		context.shutdown();
 		return rtn;
 	}
 	
-	public String getBusiness(){
-		String rtn = "";
-		return rtn;
-	}
 	
-	
-	
-	//read file method
-	private String readApiKeyFile() {
-		String apikey = null;
-		try {
-		      File myObj = new File("C:\\Users\\32kin\\OneDrive\\Documents\\googleApiKey.txt");
-		      Scanner myReader = new Scanner(myObj);
-		      while (myReader.hasNextLine()) {
-		    	  apikey = myReader.nextLine();
-		      }
-		      myReader.close();
-		    } catch (FileNotFoundException e) {
-		      System.out.println("An error occurred.");
-		      e.printStackTrace();
-		    }
-		return apikey;
-	}
 
 }
