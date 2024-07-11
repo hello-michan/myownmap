@@ -1,16 +1,10 @@
 package mn.myownmap.myownmap.service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
-
-
-import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
@@ -24,8 +18,6 @@ import com.google.maps.model.LatLng;
 import mn.myownmap.myownmap.model.DecimalGeoData;
 import mn.myownmap.myownmap.model.GeoData;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.Bucket;
-import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
@@ -33,13 +25,9 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 public class GeodataService {
 
 	//get latitude and longitude from photos 
-	public LatLng getGeoData(String file) throws ImageProcessingException, IOException {
+	public LatLng getGeoData(Metadata metadata) throws ImageProcessingException, IOException {
 		LatLng location = new LatLng();
 		DecimalGeoData decimalGeoDataObj = new DecimalGeoData();
-		decimalGeoDataObj.setFileName(file);
-		String getFile = Objects.requireNonNull(GeodataService.class.getClassLoader().getResource(file)).getFile();
-		File picFile = new File(getFile);
-		Metadata metadata = ImageMetadataReader.readMetadata(picFile);
 		GeoData geoData = new GeoData();
 		for (Directory directory : metadata.getDirectories()) {
 			if (!directory.getName().equalsIgnoreCase("gps")) {
